@@ -16,7 +16,7 @@ export const mainListItems = (
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+      <ListItemText primary="Carbon Optimised Job Scheduler" />
     </ListItemButton>
     {/*<ListItemButton>*/}
     {/*<ListItemIcon>*/}

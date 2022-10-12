@@ -1,45 +1,61 @@
-import React from "react";
+import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
-import { Button, Slider, TextField } from "@mui/material";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { Button, Grid, Slider, TextField } from "@mui/material";
+import { ProcessForm } from "./processForm.component";
+import { ProcessList } from "./processList.component";
+
+export interface Process {
+  name: string;
+  duration: string;
+  location?: string;
+}
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#AFDA63",
+    },
+    secondary: {
+      main: "#016D68",
+    },
+  },
+});
 
 export const ProcessTable = () => {
+  const [processes, setProcesses] = useState<Process[]>([]);
+
+  const handleAddProcess = (values: Process) => {
+    setProcesses([...processes, values]);
+    console.log("processes", processes);
+  };
+
+  console.log("processes", processes);
+  const handleOptimize = () => {
+    // send request to backend
+    console.log("processes", processes);
+  };
+
   return (
-    <div>
-      <h1>Process Table</h1>
-      <div className="flex flex-col">
-        <Typography id="non-linear-slider" gutterBottom>
-          Process name
-        </Typography>
-        <Slider
-          value={50}
-          min={0}
-          step={0.1}
-          max={6}
-          scale={(x) => x ** 10}
-          // getAriaValueText={valueLabelFormat}
-          // valueLabelFormat={valueLabelFormat}
-          // onChange={handleChange}
-          valueLabelDisplay="auto"
-          aria-labelledby="non-linear-slider"
-        />
-        <TextField id="duration-text" label="Process name" />{" "}
+    <ThemeProvider theme={theme}>
+      <div
+        style={{ margin: "6rem", backgroundColor: "white", minHeight: "80vh" }}
+      >
+        <h1 style={{ textAlign: "center" }}>Process Table</h1>
+        <ProcessList processes={processes} />
+        <ProcessForm addProcess={handleAddProcess} />
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Button
+            sx={{ width: "10%", textAlign: "center" }}
+            variant="contained"
+            type="submit"
+            color={"primary"}
+            onClick={handleOptimize}
+          >
+            Optimize
+          </Button>
+        </div>
       </div>
-      <>
-        <form>
-          <TextField id="process-name" label="Process name" />{" "}
-          <TextField id="location" label="Location" />{" "}
-          <TextField id="duration" label="Duration (min)" />
-          <AddCircleIcon
-            fontSize="large"
-            style={{ color: "#7FBDDC" }}
-            // onClick={clicked}
-          />
-          <div>
-            <Button type="submit">Optimize</Button>
-          </div>
-        </form>
-      </>
-    </div>
+    </ThemeProvider>
   );
 };

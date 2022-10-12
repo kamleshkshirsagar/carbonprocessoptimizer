@@ -21,7 +21,17 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const drawerWidth: number = 240;
-const mdTheme = createTheme();
+const mdTheme = createTheme({
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        colorPrimary: {
+          backgroundColor: "#016D68",
+        },
+      },
+    },
+  },
+});
 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
@@ -102,7 +112,7 @@ function App() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Dashboard
+              Carbon Optimised Job Scheduler
             </Typography>
           </Toolbar>
         </AppBar>
@@ -139,7 +149,7 @@ function App() {
         >
           <Toolbar />
           <Grid container>
-            <Grid item>
+            <Grid item xs={12}>
               <ProcessTable />
             </Grid>
             {/*<Grid xs={12} sm={6}>*/}
