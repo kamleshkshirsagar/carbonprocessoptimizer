@@ -1,0 +1,10 @@
+python-dotenv
+openpyxl==3.0.10
+pyomo
+pandas
+openbox
+hiplot
+gurobipy
+munch
+pyxirr
+xlsxwriter
