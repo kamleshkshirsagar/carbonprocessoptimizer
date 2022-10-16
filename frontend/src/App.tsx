@@ -14,7 +14,6 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "./listItems";
 import { Grid } from "@mui/material";
 import { ProcessTable } from "./processTable.component";
-import { Calendar } from "./calendar.component";
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -152,9 +151,6 @@ function App() {
             <Grid item xs={12}>
               <ProcessTable />
             </Grid>
-            {/*<Grid xs={12} sm={6}>*/}
-            {/*  <Calendar />*/}
-            {/*</Grid>*/}
           </Grid>
         </Box>
       </Box>

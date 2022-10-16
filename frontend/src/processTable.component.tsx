@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button, Grid, Slider, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import { ProcessForm } from "./processForm.component";
 import { ProcessList } from "./processList.component";
 
@@ -10,7 +10,7 @@ export interface Process {
   duration: number;
   startTime: string | null;
   endTime: string | null;
-  dependencies: string[] | null;
+  dependencies: number[] | null;
 }
 
 const theme = createTheme({
@@ -27,11 +27,11 @@ const theme = createTheme({
 export const ProcessTable = () => {
   const [processes, setProcesses] = useState<Process[]>([]);
 
-  const handleAddProcess = (values: Process) => {
+  const handleAddProcess = (event: any, values: Process) => {
+    event.preventDefault();
     setProcesses([...processes, values]);
   };
 
-  console.log("processes", processes);
   const handleOptimize = () => {
     // send request to backend
     console.log("processes", processes);
@@ -62,7 +62,7 @@ export const ProcessTable = () => {
           Process Table ( EastUs )
         </Typography>
         <ProcessList processes={processes} />
-        <ProcessForm addProcess={handleAddProcess} />
+        <ProcessForm addProcess={handleAddProcess} processes={processes} />
         <Button
           sx={{ width: "10%", textAlign: "center" }}
           variant="contained"

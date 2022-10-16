@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { Button, InputBase, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
+import Select from "react-select";
 import { useFormik } from "formik";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -8,15 +9,21 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Process } from "./processTable.component";
 
 interface ProcessFormProps {
-  addProcess: (values: Process) => void;
+  addProcess: (event: any, values: Process) => void;
+  processes: Process[];
 }
 
-export const ProcessForm = ({ addProcess }: ProcessFormProps) => {
+export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
   const [name, setName] = useState("");
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [dependencies, setDependencies] = useState(null);
   const [duration, setDuration] = useState(0);
+  const getDependencyOptions = () => {
+    return processes.map((process: Process, index) => {
+      return { name: process.name, value: index };
+    });
+  };
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -64,18 +71,47 @@ export const ProcessForm = ({ addProcess }: ProcessFormProps) => {
             onChange={(newValue) => setEndTime(newValue)}
           ></TimePicker>{" "}
         </LocalizationProvider>
-        <TextField
-          id="duration"
-          type="number"
-          label="Duration (min)"
-          placeholder="Enter duration in minutes"
-          value={formik.values.duration}
-          onChange={(e) => setDuration(Number(e.target.value))}
+        <Select
+          placeholder="Select dependencies"
+          styles={{
+            control: (provided: any) => ({
+              ...provided,
+              minHeight: "3.5rem",
+            }),
+            dropdownIndicator: (provided) => ({
+              ...provided,
+              color: "#AFDA63",
+            }),
+            menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+            menu: (base) => ({
+              ...base,
+              width: "max-content",
+              minWidth: "50%",
+            }),
+          }}
+          isMulti
+          options={getDependencyOptions()}
+          getOptionValue={(option: any) => option.value}
+          getOptionLabel={(option: any) => option.name}
+          onChange={(selectedValues: any) => {
+            const selectedDependencies = selectedValues.map(
+              (value: any) => value.value
+            );
+            setDependencies(selectedDependencies);
+          }}
         />
+        {/*<TextField*/}
+        {/*  id="duration"*/}
+        {/*  type="number"*/}
+        {/*  label="Duration (min)"*/}
+        {/*  placeholder="Enter duration in minutes"*/}
+        {/*  value={formik.values.duration}*/}
+        {/*  onChange={(e) => setDuration(Number(e.target.value))}*/}
+        {/*/>*/}
         <AddCircleIcon
           fontSize="large"
           style={{ color: "#7FBDDC", alignSelf: "center" }}
-          onClick={() => addProcess(formik.values)}
+          onClick={(e) => addProcess(e, formik.values)}
         />
       </div>
     </form>
