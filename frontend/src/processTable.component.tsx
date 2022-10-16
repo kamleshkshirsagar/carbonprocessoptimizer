@@ -7,8 +7,10 @@ import { ProcessList } from "./processList.component";
 
 export interface Process {
   name: string;
-  duration: string;
-  location?: string;
+  duration: number;
+  startTime: string | null;
+  endTime: string | null;
+  dependencies: string[] | null;
 }
 
 const theme = createTheme({
@@ -27,7 +29,6 @@ export const ProcessTable = () => {
 
   const handleAddProcess = (values: Process) => {
     setProcesses([...processes, values]);
-    console.log("processes", processes);
   };
 
   console.log("processes", processes);
@@ -39,22 +40,38 @@ export const ProcessTable = () => {
   return (
     <ThemeProvider theme={theme}>
       <div
-        style={{ margin: "6rem", backgroundColor: "white", minHeight: "80vh" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          margin: "4rem",
+          backgroundColor: "white",
+          minHeight: "80vh",
+          borderRadius: "16px",
+        }}
       >
-        <h1 style={{ textAlign: "center" }}>Process Table</h1>
+        <Typography
+          style={{
+            textAlign: "center",
+            paddingTop: "3rem",
+            fontSize: "24px",
+            fontWeight: "bold",
+            color: "#016D68",
+          }}
+        >
+          Process Table ( EastUs )
+        </Typography>
         <ProcessList processes={processes} />
         <ProcessForm addProcess={handleAddProcess} />
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <Button
-            sx={{ width: "10%", textAlign: "center" }}
-            variant="contained"
-            type="submit"
-            color={"primary"}
-            onClick={handleOptimize}
-          >
-            Optimize
-          </Button>
-        </div>
+        <Button
+          sx={{ width: "10%", textAlign: "center" }}
+          variant="contained"
+          type="submit"
+          color={"primary"}
+          onClick={handleOptimize}
+        >
+          Optimize
+        </Button>
       </div>
     </ThemeProvider>
   );
