@@ -44,75 +44,97 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
         style={{
           display: "flex",
           flexDirection: "row",
-          backgroundColor: "white",
-          justifyContent: "space-between",
-          margin: "1rem",
         }}
       >
-        <TextField
-          label="Process name"
-          placeholder="Enter process name"
-          value={formik.values.name}
-          onChange={(e) => setName(e.target.value)}
-        ></TextField>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <TimePicker
-            label="Start time"
-            views={["hours"]}
-            renderInput={(params) => <TextField {...params} />}
-            value={formik.values.startTime}
-            onChange={(newValue) => setStartTime(newValue)}
-          ></TimePicker>
-          <TimePicker
-            label="End time"
-            views={["hours"]}
-            renderInput={(params) => <TextField {...params} />}
-            value={formik.values.endTime}
-            onChange={(newValue) => setEndTime(newValue)}
-          ></TimePicker>{" "}
-        </LocalizationProvider>
-        <Select
-          placeholder="Select dependencies"
-          styles={{
-            control: (provided: any) => ({
-              ...provided,
-              minHeight: "3.5rem",
-            }),
-            dropdownIndicator: (provided) => ({
-              ...provided,
-              color: "#AFDA63",
-            }),
-            menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
-            menu: (base) => ({
-              ...base,
-              width: "max-content",
-              minWidth: "50%",
-            }),
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: "white",
+            margin: "1rem",
           }}
-          isMulti
-          options={getDependencyOptions()}
-          getOptionValue={(option: any) => option.value}
-          getOptionLabel={(option: any) => option.name}
-          onChange={(selectedValues: any) => {
-            const selectedDependencies = selectedValues.map(
-              (value: any) => value.value
-            );
-            setDependencies(selectedDependencies);
-          }}
-        />
-        {/*<TextField*/}
-        {/*  id="duration"*/}
-        {/*  type="number"*/}
-        {/*  label="Duration (min)"*/}
-        {/*  placeholder="Enter duration in minutes"*/}
-        {/*  value={formik.values.duration}*/}
-        {/*  onChange={(e) => setDuration(Number(e.target.value))}*/}
-        {/*/>*/}
+        >
+          <TextField
+            label="Process name"
+            size="small"
+            placeholder="Enter process name"
+            value={formik.values.name}
+            onChange={(e) => setName(e.target.value)}
+          ></TextField>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <TimePicker
+              label="Start time"
+              views={["hours"]}
+              renderInput={(params) => <TextField {...params} />}
+              value={formik.values.startTime}
+              onChange={(newValue) => setStartTime(newValue)}
+            ></TimePicker>
+            <TimePicker
+              label="End time"
+              views={["hours"]}
+              renderInput={(params) => <TextField {...params} />}
+              value={formik.values.endTime}
+              onChange={(newValue) => setEndTime(newValue)}
+            ></TimePicker>{" "}
+          </LocalizationProvider>
+          <Select
+            placeholder="Select dependencies"
+            styles={{
+              control: (provided: any) => ({
+                ...provided,
+                minHeight: "3.5rem",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                color: "#AFDA63",
+              }),
+              menuPortal: (provided) => ({ ...provided, zIndex: 9999 }),
+              menu: (base) => ({
+                ...base,
+                width: "max-content",
+                minWidth: "50%",
+              }),
+            }}
+            isMulti
+            options={getDependencyOptions()}
+            getOptionValue={(option: any) => option.value}
+            getOptionLabel={(option: any) => option.name}
+            onChange={(selectedValues: any) => {
+              const selectedDependencies = selectedValues.map(
+                (value: any) => value.value
+              );
+              setDependencies(selectedDependencies);
+            }}
+          />
+          {/*<TextField*/}
+          {/*  id="duration"*/}
+          {/*  type="number"*/}
+          {/*  label="Duration (min)"*/}
+          {/*  placeholder="Enter duration in minutes"*/}
+          {/*  value={formik.values.duration}*/}
+          {/*  onChange={(e) => setDuration(Number(e.target.value))}*/}
+          {/*/>*/}
+        </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap",
+          marginLeft: "1rem",
+          marginBottom: "1rem",
+        }}
+      >
         <AddCircleIcon
           fontSize="large"
-          style={{ color: "#7FBDDC", alignSelf: "center" }}
+          style={{
+            color: "#7FBDDC",
+            alignSelf: "center",
+            marginRight: "0.5rem",
+          }}
           onClick={(e) => addProcess(e, formik.values)}
         />
+        <span>Add new process</span>
       </div>
     </form>
   );

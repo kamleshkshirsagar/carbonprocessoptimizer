@@ -3,8 +3,9 @@ import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
 import { ProcessForm } from "./processForm.component";
+import { ProcessGraph } from "./processGraph.component";
 import { ProcessList } from "./processList.component";
-
+import { fetchOptimizedProcesses } from "./process.service";
 export interface Process {
   name: string;
   duration: number;
@@ -33,7 +34,7 @@ export const ProcessTable = () => {
   };
 
   const handleOptimize = () => {
-    // send request to backend
+    const hello = fetchOptimizedProcesses();
     console.log("processes", processes);
   };
 
@@ -44,7 +45,7 @@ export const ProcessTable = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          margin: "4rem",
+          margin: "2rem",
           backgroundColor: "white",
           minHeight: "80vh",
           borderRadius: "16px",
@@ -61,17 +62,37 @@ export const ProcessTable = () => {
         >
           Process Table ( EastUs )
         </Typography>
-        <ProcessList processes={processes} />
-        <ProcessForm addProcess={handleAddProcess} processes={processes} />
-        <Button
-          sx={{ width: "10%", textAlign: "center" }}
-          variant="contained"
-          type="submit"
-          color={"primary"}
-          onClick={handleOptimize}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            marginTop: "3rem",
+          }}
         >
-          Optimize
-        </Button>
+          <ProcessGraph />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <ProcessForm addProcess={handleAddProcess} processes={processes} />
+            <Button
+              sx={{ width: "40%", textAlign: "center" }}
+              variant="contained"
+              type="submit"
+              color={"primary"}
+              onClick={handleOptimize}
+            >
+              Optimize
+            </Button>
+          </div>
+        </div>
+        <div style={{ marginTop: "4rem", width: "75%" }}>
+          <ProcessList processes={processes} />
+        </div>
       </div>
     </ThemeProvider>
   );

@@ -77,7 +77,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function App() {
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -96,7 +96,7 @@ function App() {
               edge="start"
               color="inherit"
               aria-label="open drawer"
-              onClick={toggleDrawer}
+              // onClick={toggleDrawer}
               sx={{
                 marginRight: "36px",
                 ...(open && { display: "none" }),
@@ -124,9 +124,9 @@ function App() {
               px: [1],
             }}
           >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
+            {/*<IconButton onClick={toggleDrawer}>*/}
+            {/*  <ChevronLeftIcon />*/}
+            {/*</IconButton>*/}
           </Toolbar>
           <Divider />
           <List component="nav">
