@@ -1,0 +1,7 @@
+azure-core=1.16.0
+azureml=0.2.7
+azureml-core=1.32.0
+numpy=1.21.1
+pandas=1.2.5
+requests=2.26.0
+sklearn
