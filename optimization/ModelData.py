@@ -17,6 +17,7 @@ class ModelData(ABC):
         self.hr_mins = self.c_df.index.to_list()
         self.m.hr_mins = pe.Set(initialize=self.hr_mins)
         self.m.carbon_value = self.c_df['value'].to_dict()
+        self.resolution = self.c_df['duration'][0]
 
 if __name__ == "__main__":
     pass
