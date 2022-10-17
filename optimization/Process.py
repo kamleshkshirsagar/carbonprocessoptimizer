@@ -3,7 +3,7 @@ import numpy as np
 import math
 
 class Process():
-    
+
     def __init__(self, overall_process, unit_name, unit_info, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.p = overall_process
