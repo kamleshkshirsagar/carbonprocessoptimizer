@@ -2,6 +2,7 @@
 from optimization.ModelData import ModelData, parse_json
 from optimization.Process import Process
 import pyomo.environ as pe
+import pandas as pd
 
 class Overall_Process(ModelData):
     def __init__(self, print_output=False, *args, **kwargs):
@@ -52,8 +53,18 @@ class Overall_Process(ModelData):
                 return model.total_c_credits 
             self.m.obj = pe.Objective(rule=objective_minimize_total_c_credits, sense=pe.minimize)
 
+    def export_the_results(self):
+        df = pd.DataFrame()
+        df['hr_mins'] = self.c_df.index.to_list()
+        df['Process'] = [pe.value(self.m.process_active[h]) for h in self.m.hr_mins]
+        df['Carbon Values'] =  [pe.value(self.m.carbon_value[h]) for h in self.m.hr_mins]
+
+        df.to_excel('./results.xlsx', index=True)
+
+
     def print_output_func(self):
         print('Start index= {}'.format(round(pe.value(self.m.process_opti_start),3)))
+        self.export_the_results()
 
     def solve(self, solver='cbc'):
         solver=pe.SolverFactory(solver)
@@ -69,18 +80,26 @@ class Overall_Process(ModelData):
         self.results = results
         return None
 
+
+
 def opti_model():
+
+    # Setup the overall process model
     overall_process = Overall_Process(print_output=True)
 
     proc_info = parse_json(file_path="./optimization/process_details.json")
 
+    # Add each process unit as defined in the json
     for proc in proc_info:
         overall_process.add_unit(unit_name=proc, unit_info=proc_info[proc])
 
+    # Add any constraints that would apply to the overall process
     overall_process.set_overall_system_constraints()
 
+    # Define objective function
     overall_process.define_objective_function()
 
+    # Solve for the given objective
     overall_process.solve()
 
 

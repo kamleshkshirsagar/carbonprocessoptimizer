@@ -3,6 +3,7 @@ import numpy as np
 import math
 
 class Process():
+    
     def __init__(self, overall_process, unit_name, unit_info, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.p = overall_process
@@ -49,10 +50,9 @@ class Process():
         self.p.m.process_active_cons2 = pe.Expression(self.p.m.hr_mins, rule=process_active_rule_2)
 
 
-
-        def opti_start_last_starting_point_rule(model, h_m):
+        def opti_start_last_starting_point_rule(model):
             return model.process_opti_start <= self.p.hr_mins[-1]-model.process_duration
-        self.p.m.opti_start_last_starting_point = pe.Constraint(self.p.m.hr_mins, rule=opti_start_last_starting_point_rule)
+        self.p.m.opti_start_last_starting_point = pe.Constraint(rule=opti_start_last_starting_point_rule)
 
         return None
 
