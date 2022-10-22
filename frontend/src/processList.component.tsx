@@ -2,9 +2,15 @@ import React from "react";
 import { Process } from "./processTable.component";
 import { Chart } from "react-google-charts";
 import dayjs from "dayjs";
+import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
 
 interface ProcessListProps {
   processes: Process[];
+  startTime: any;
+  endTime: any;
+  isComingFromForm?: boolean;
+  selectedOption: string;
+  fetchedData: FAKE_DATA_TYPE | null;
 }
 const columns = [
   { type: "string", label: "Process Index" },
@@ -17,7 +23,14 @@ const columns = [
   { type: "string", label: "Dependencies" },
 ];
 
-export const ProcessList = ({ processes }: ProcessListProps) => {
+export const ProcessList = ({
+  processes,
+  startTime,
+  endTime,
+  isComingFromForm,
+  selectedOption,
+  fetchedData,
+}: ProcessListProps) => {
   const options = {
     height: 275,
     gantt: {
@@ -29,20 +42,40 @@ export const ProcessList = ({ processes }: ProcessListProps) => {
         fontSize: 14,
         color: "#757575",
       },
+      defaultEndDateMillis: dayjs(endTime).toDate(),
     },
   };
-  const rows = processes.map((process, index) => {
-    return [
-      index.toString(),
-      process.name,
-      process.name,
-      dayjs(process.startTime).toDate(),
-      dayjs(process.endTime).toDate(),
-      process.duration * 60 * 1000,
-      100,
-      process.dependencies !== null ? process.dependencies.toString() : null,
-    ];
-  });
+
+  const rows = isComingFromForm
+    ? processes.map((process, index) => {
+        return [
+          index.toString(),
+          process.name,
+          process.name,
+          dayjs(startTime).toDate(),
+          null,
+          process.duration !== null && process.duration * 60 * 1000,
+          100,
+          null,
+        ];
+      })
+    : FAKE_DATA.fakeData
+        .filter((data) => data.type === selectedOption)
+        .map((data) =>
+          data.processes.map((process, index) => {
+            return [
+              index.toString(),
+              process.name,
+              process.name,
+              dayjs(startTime).toDate(),
+              dayjs(endTime).toDate(),
+              process.duration * 60 * 1000,
+              100,
+              process.dependencies !== null && process.dependencies.toString(),
+            ];
+          })
+        );
+
   const data = [columns, ...rows];
 
   return (

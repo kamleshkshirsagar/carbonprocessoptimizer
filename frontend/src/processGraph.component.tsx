@@ -1,12 +1,29 @@
 import React from "react";
 import { Chart } from "react-google-charts";
+import { flatten } from "lodash";
+import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
 
 const data = [
-  ["Hour", "W/o optimizer", "Optimizer", "Minimum Value", "Rule based"],
-  ["08:00 AM", 1000, 400, 200, 100],
+  ["Carbon Rate", "W/o optimizer", "Optimizer", "Minimum Value", "Rule based"],
+  ["Carbon Rate", 1000, 400, 200, 100],
 ];
 
-export const ProcessGraph = () => {
+export const ProcessGraph = ({
+  fetchedData,
+}: {
+  fetchedData: FAKE_DATA_TYPE | null;
+}) => {
+  const carbonRatings = FAKE_DATA.fakeData.map((data) => data.carbonRating);
+  const data = [
+    [
+      "Carbon Rate",
+      "W/o optimizer",
+      "Optimizer",
+      "Minimum Value",
+      "Rule based",
+    ],
+    ["Carbon Rate", ...carbonRatings],
+  ];
   const options = {
     title: "Carbon Rating for running the processes",
     // hAxis: {
@@ -16,13 +33,13 @@ export const ProcessGraph = () => {
       title: "Rating (scale of 1-10)",
     },
     bar: { groupWidth: "20%" },
-    legend: { position: "bottom" },
+    legend: "none",
   };
   return (
     <>
       <Chart
         chartType="ColumnChart"
-        width="40rem"
+        width="30rem"
         height="15rem"
         options={options}
         data={data}

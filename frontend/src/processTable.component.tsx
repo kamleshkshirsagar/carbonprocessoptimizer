@@ -6,11 +6,11 @@ import { ProcessForm } from "./processForm.component";
 import { ProcessGraph } from "./processGraph.component";
 import { ProcessList } from "./processList.component";
 import { fetchOptimizedProcesses } from "./process.service";
+import { OptimizationButtons } from "./optimizationButtons";
+import { FAKE_DATA_TYPE } from "./fakeData";
 export interface Process {
   name: string;
-  duration: number;
-  startTime: string | null;
-  endTime: string | null;
+  duration: number | null;
   dependencies: number[] | null;
 }
 
@@ -26,16 +26,32 @@ const theme = createTheme({
 });
 
 export const ProcessTable = () => {
+  const location = "eastus";
+  const [fetchedData, setFetchedData] = useState<FAKE_DATA_TYPE | null>(null);
   const [processes, setProcesses] = useState<Process[]>([]);
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("Without Optimizer");
 
-  const handleAddProcess = (event: any, values: Process) => {
+  const handleAddProcess = (event: any, values: any) => {
     event.preventDefault();
-    setProcesses([...processes, values]);
+    setStartTime(values.startTime);
+    setEndTime(values.endTime);
+    setProcesses([...processes, values.processes]);
   };
 
-  const handleOptimize = () => {
-    const hello = fetchOptimizedProcesses();
-    console.log("processes", processes);
+  const handleOptimizeOption = (selectedValue: string) => {
+    setSelectedOption(selectedValue);
+  };
+
+  const handleOptimize = async () => {
+    const fetchedOptimizationData = await fetchOptimizedProcesses({
+      location,
+      startTime,
+      endTime,
+      processes,
+    });
+    setFetchedData(fetchedOptimizationData);
   };
 
   return (
@@ -60,17 +76,16 @@ export const ProcessTable = () => {
             color: "#016D68",
           }}
         >
-          Process Table ( EastUs )
+          Process Optimizations - EastUs Zone
         </Typography>
         <div
           style={{
             display: "flex",
             flexDirection: "row",
-            alignItems: "center",
             marginTop: "3rem",
           }}
         >
-          <ProcessGraph />
+          <ProcessGraph fetchedData={fetchedData} />
           <div
             style={{
               display: "flex",
@@ -80,7 +95,7 @@ export const ProcessTable = () => {
           >
             <ProcessForm addProcess={handleAddProcess} processes={processes} />
             <Button
-              sx={{ width: "40%", textAlign: "center" }}
+              sx={{ width: "20%", textAlign: "center" }}
               variant="contained"
               type="submit"
               color={"primary"}
@@ -90,8 +105,26 @@ export const ProcessTable = () => {
             </Button>
           </div>
         </div>
-        <div style={{ marginTop: "4rem", width: "75%" }}>
-          <ProcessList processes={processes} />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginTop: "4rem",
+            width: "60%",
+          }}
+        >
+          <OptimizationButtons
+            selectedValue={selectedOption}
+            setSelectedValue={handleOptimizeOption}
+          />
+          <ProcessList
+            processes={processes}
+            startTime={startTime}
+            endTime={endTime}
+            isComingFromForm={true}
+            selectedOption={selectedOption}
+            fetchedData={fetchedData}
+          />
         </div>
       </div>
     </ThemeProvider>

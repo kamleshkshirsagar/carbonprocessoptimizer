@@ -7,9 +7,10 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Process } from "./processTable.component";
+import Typography from "@mui/material/Typography";
 
 interface ProcessFormProps {
-  addProcess: (event: any, values: Process) => void;
+  addProcess: (event: any, values: any) => void;
   processes: Process[];
 }
 
@@ -18,7 +19,7 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [dependencies, setDependencies] = useState(null);
-  const [duration, setDuration] = useState(0);
+  const [duration, setDuration] = useState<number | null>(null);
   const getDependencyOptions = () => {
     return processes.map((process: Process, index) => {
       return { name: process.name, value: index };
@@ -28,11 +29,9 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      name: name,
       startTime: startTime,
       endTime: endTime,
-      dependencies: dependencies,
-      duration: duration,
+      processes: { name: name, duration: duration, dependencies: dependencies },
     },
     onSubmit: (values) => {
       // console.log("values", values);
@@ -43,40 +42,61 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
       <div
         style={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
+          marginBottom: "1rem",
         }}
       >
+        <Typography
+          style={{
+            fontWeight: "bold",
+            marginBottom: "1rem",
+            textAlign: "center",
+          }}
+        >
+          Select start and end window time for all processes
+        </Typography>
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
             backgroundColor: "white",
-            margin: "1rem",
+            marginBottom: "1rem",
+            justifyContent: "center",
           }}
         >
-          <TextField
-            label="Process name"
-            size="small"
-            placeholder="Enter process name"
-            value={formik.values.name}
-            onChange={(e) => setName(e.target.value)}
-          ></TextField>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
-              label="Start time"
+              label="Optimization start window"
               views={["hours"]}
               renderInput={(params) => <TextField {...params} />}
               value={formik.values.startTime}
               onChange={(newValue) => setStartTime(newValue)}
             ></TimePicker>
             <TimePicker
-              label="End time"
+              label="Optimization end window"
               views={["hours"]}
               renderInput={(params) => <TextField {...params} />}
               value={formik.values.endTime}
               onChange={(newValue) => setEndTime(newValue)}
             ></TimePicker>{" "}
           </LocalizationProvider>
+        </div>
+        <Typography
+          style={{
+            fontWeight: "bold",
+            marginBottom: "1rem",
+            textAlign: "center",
+          }}
+        >
+          Add maximum 4 processes
+        </Typography>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <TextField
+            label="Process name"
+            placeholder="Enter process name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            style={{ marginRight: "1rem" }}
+          ></TextField>
           <Select
             placeholder="Select dependencies"
             styles={{
@@ -106,35 +126,36 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
               setDependencies(selectedDependencies);
             }}
           />
-          {/*<TextField*/}
-          {/*  id="duration"*/}
-          {/*  type="number"*/}
-          {/*  label="Duration (min)"*/}
-          {/*  placeholder="Enter duration in minutes"*/}
-          {/*  value={formik.values.duration}*/}
-          {/*  onChange={(e) => setDuration(Number(e.target.value))}*/}
-          {/*/>*/}
+          <TextField
+            id="duration"
+            type="number"
+            label="Duration"
+            placeholder="Enter in minutes"
+            value={duration}
+            onChange={(e) => setDuration(Number(e.target.value))}
+            style={{ marginLeft: "1rem", width: "10rem" }}
+          />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              marginLeft: "1rem",
+              marginBottom: "1rem",
+            }}
+          >
+            <AddCircleIcon
+              fontSize="large"
+              style={{
+                color: "#7FBDDC",
+                alignSelf: "center",
+                marginRight: "0.5rem",
+              }}
+              onClick={(e) => addProcess(e, formik.values)}
+            />
+            {/*<span>Add new process</span>*/}
+          </div>
         </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          flexWrap: "wrap",
-          marginLeft: "1rem",
-          marginBottom: "1rem",
-        }}
-      >
-        <AddCircleIcon
-          fontSize="large"
-          style={{
-            color: "#7FBDDC",
-            alignSelf: "center",
-            marginRight: "0.5rem",
-          }}
-          onClick={(e) => addProcess(e, formik.values)}
-        />
-        <span>Add new process</span>
       </div>
     </form>
   );
