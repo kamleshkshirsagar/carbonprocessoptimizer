@@ -1,8 +1,25 @@
 ## Base file to run optimization
-from optimization.ModelData import ModelData, parse_json
 from optimization.Process import Process
 import pyomo.environ as pe
 import pandas as pd
+from abc import ABC
+import json
+
+def parse_json(file_path=None):
+    with open(file_path, 'r') as fp:
+        model_json = json.load(fp)
+    return model_json
+
+class ModelData(ABC):
+    def __init__(self):
+        self.m = pe.ConcreteModel()
+        carbon_data = parse_json(file_path='./optimization/test_data.json')
+        self.c_df = pd.read_json(carbon_data)
+        self.hr_mins = self.c_df.index.to_list()
+        self.m.hr_mins = pe.Set(initialize=self.hr_mins)
+        self.m.carbon_value = self.c_df['value'].to_dict()
+        self.resolution = self.c_df['duration'][0]
+
 
 class Overall_Process(ModelData):
     def __init__(self, print_output=False, *args, **kwargs):
@@ -36,11 +53,8 @@ class Overall_Process(ModelData):
         for unit in self.num_units:
             unit.define_c_credits()
 
-        def get_total_c_credits(model, y):
-            c_credits = 0
-            for unit in self.num_units:
-                c_credits = +model.process_c_credits
-            return c_credits
+        def get_total_c_credits(model):
+            return model.process_c_credits
         self.m.total_c_credits = pe.Expression(rule=get_total_c_credits)
 
         return None
@@ -50,7 +64,7 @@ class Overall_Process(ModelData):
 
         if obj_func=='minimize_total_c_credits':
             def objective_minimize_total_c_credits(model):
-                return model.total_c_credits 
+                return model.process_c_credits 
             self.m.obj = pe.Objective(rule=objective_minimize_total_c_credits, sense=pe.minimize)
 
     def export_the_results(self):
@@ -59,8 +73,7 @@ class Overall_Process(ModelData):
         df['Process'] = [pe.value(self.m.process_active[h]) for h in self.m.hr_mins]
         df['Carbon Values'] =  [pe.value(self.m.carbon_value[h]) for h in self.m.hr_mins]
 
-        df.to_excel('./results.xlsx', index=True)
-
+        # df.to_excel('./results.xlsx', index=True)
 
     def print_output_func(self):
         print('Start index= {}'.format(round(pe.value(self.m.process_opti_start),3)))
@@ -80,14 +93,21 @@ class Overall_Process(ModelData):
         self.results = results
         return None
 
-
-
 def opti_model():
 
     # Setup the overall process model
     overall_process = Overall_Process(print_output=True)
 
-    proc_info = parse_json(file_path="./optimization/process_details.json")
+    proc_info = {
+    "Process1": {
+        "start_time": "2022-10-16T12:00:00",
+        "end_time": "2022-10-16T22:00:00",
+        "duration_mins": 20.0,
+        "dependencies": None
+        }
+    }
+    
+    # parse_json(file_path="./optimization/process_details.json")
 
     # Add each process unit as defined in the json
     for proc in proc_info:
@@ -102,8 +122,9 @@ def opti_model():
     # Solve for the given objective
     overall_process.solve()
 
-
+    return round(pe.value(overall_process.m.process_opti_start),3)
 
 
 if __name__ == "__main__":
-    opti_model()
+    result = opti_model()
+    print(result)
