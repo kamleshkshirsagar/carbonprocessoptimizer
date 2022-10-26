@@ -8,7 +8,7 @@ interface ProcessListProps {
   processes: Process[];
   startTime: any;
   endTime: any;
-  isComingFromForm?: boolean;
+  isFetchedData?: boolean;
   selectedOption: string;
   fetchedData: FAKE_DATA_TYPE | null;
 }
@@ -27,7 +27,7 @@ export const ProcessList = ({
   processes,
   startTime,
   endTime,
-  isComingFromForm,
+  isFetchedData,
   selectedOption,
   fetchedData,
 }: ProcessListProps) => {
@@ -46,7 +46,7 @@ export const ProcessList = ({
     },
   };
 
-  const rows = isComingFromForm
+  const rows = !isFetchedData
     ? processes.map((process, index) => {
         return [
           index.toString(),
@@ -59,10 +59,11 @@ export const ProcessList = ({
           null,
         ];
       })
-    : FAKE_DATA.fakeData
+    : FAKE_DATA.fakeData // should change with fetchedData
         .filter((data) => data.type === selectedOption)
         .map((data) =>
           data.processes.map((process, index) => {
+            console.log("here2");
             return [
               index.toString(),
               process.name,

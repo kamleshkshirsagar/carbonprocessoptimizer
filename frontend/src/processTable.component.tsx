@@ -28,6 +28,7 @@ const theme = createTheme({
 export const ProcessTable = () => {
   const location = "eastus";
   const [fetchedData, setFetchedData] = useState<FAKE_DATA_TYPE | null>(null);
+  const [isFetchedData, setIsFetchedData] = useState(false);
   const [processes, setProcesses] = useState<Process[]>([]);
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
@@ -52,6 +53,7 @@ export const ProcessTable = () => {
       processes,
     });
     setFetchedData(fetchedOptimizationData);
+    setIsFetchedData(true);
   };
 
   return (
@@ -121,7 +123,7 @@ export const ProcessTable = () => {
             processes={processes}
             startTime={startTime}
             endTime={endTime}
-            isComingFromForm={true}
+            isFetchedData={isFetchedData}
             selectedOption={selectedOption}
             fetchedData={fetchedData}
           />
