@@ -1,6 +1,6 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-import { flatten } from "lodash";
+// import { flatten } from "lodash";
 import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
 
 const data = [
