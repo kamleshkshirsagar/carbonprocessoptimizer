@@ -125,8 +125,20 @@ def restructure_input_req(carbon_api_data, process_data, windowSize):
     return input
 
 def spt(carbon_api_data, process_data, windowSize):
-    new_proc_data = restructure_input_req(carbon_api_data, process_data, windowSize)
-    print(new_proc_data)
+    processes = restructure_input_req(carbon_api_data, process_data, windowSize)
+    SCHEDULE = dict()
+    unfinished_processes = set(processes.keys())
+    start = 0
+    while len(unfinished_processes) > 0:
+        start = max(start, min(processes[process]['start_window'] for process in unfinished_processes))
+        spt = {process:processes[process]['duration'] for process in unfinished_processes if processes[process]['start_window'] <= start}
+        process = min(spt, key=spt.get)
+        finish = start + processes[process]['duration']
+        unfinished_processes.remove(process)
+        SCHEDULE[process] = {'start': start, 'finish': finish}
+        start = finish
+
+    print(SCHEDULE)
     return None
 
 def run(request, windowSize=5):
