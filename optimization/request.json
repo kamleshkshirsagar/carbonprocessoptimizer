@@ -1,0 +1,4 @@
+ {"location":"eastus",
+"startTime": "2022-10-29T20:00:00.258Z",
+"endTime": "2022-10-30T09:00:00.006Z",
+"processes": [{"name":"p1","duration":60,"dependencies":null}]}
