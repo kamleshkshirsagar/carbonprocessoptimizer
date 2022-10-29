@@ -19,14 +19,14 @@ class Process():
 
         # print(self.p.hr_mins)
         # exit()
-        self.p.m.process_opti_start = pe.Var(
-            initialize=0, 
-            bounds=(self.p.hr_mins[0], self.p.hr_mins[-1]), # Convert to MW. Values input in GW
-            within=pe.NonNegativeIntegers)
+        # self.p.m.process_opti_start = pe.Var(
+        #     initialize=0, 
+        #     bounds=(self.p.hr_mins[0], self.p.hr_mins[-1]), # Convert to MW. Values input in GW
+        #     within=pe.NonNegativeIntegers)
 
         self.p.m.process_active = pe.Var(self.p.m.hr_mins, domain=pe.Boolean, initialize=0)
 
-        # self.setup_constraints()
+        self.setup_constraints()
 
     def get_unit_name(self):
         return self.unit_name  
@@ -47,13 +47,14 @@ class Process():
         #     zero
 
 
+        # def process_size_rule():
+        #     model.process_active[i]
+        #     return 
+
+        # self.p.m.process_size = pe.Expression(self.p.m.hr_mins, rule=process_size_rule)
+
+
         # When i - model.process_opti_start >= 0, model.process_active must be 0 
-
-
-        def process_active_rule_1(model):
-            return (model.process_active[model.process_opti_start] == 1)
-        self.p.m.process_active_cons1 = pe.Constraint(rule=process_active_rule_1)
-
 
         # def process_active_rule_1(model, i):
         #     bigM=-5000
@@ -70,7 +71,7 @@ class Process():
 
 
         # def opti_start_last_starting_point_rule(model):
-        #     return model.process_opti_start <= self.p.hr_mins[-1]
+        #     return model.process_active[i] <= self.p.hr_mins[-1] 
         # self.p.m.opti_start_last_starting_point = pe.Constraint(rule=opti_start_last_starting_point_rule)
 
         return None
@@ -85,7 +86,7 @@ class Process():
 def init():
     print('Inside init')
 
-def request_parser(request):
+def request_parser(request, windowSize):
     #extracting process data 
     process_dat=pd.DataFrame.from_records(request['processes'])
     
@@ -93,7 +94,7 @@ def request_parser(request):
     loc = request['location']
     startTime = str(request['startTime']) 
     endTime = str(request['endTime'])
-    final_url= url + '?location=' + request['location'] + '&dataStartAt=' +startTime + '&dataEndAt='+endTime + '&windowSize=5'
+    final_url= url + '?location=' + request['location'] + '&dataStartAt=' +startTime + '&dataEndAt='+endTime + '&windowSize='+windowSize
     return final_url, process_dat
 
 def nooptim(data, process_data,request):
@@ -108,7 +109,27 @@ def webservice(url):
     result=json.loads(data_file)['forecastData']
     return str.encode(json.dumps(result))
 
-def run(request):
+def restructure_input_req(carbon_api_data, process_data, windowSize):
+    c_df = pd.read_json(carbon_api_data)
+    indices = c_df.index.to_list()
+    start_index = indices[0]
+    end_index = indices[-1]
+    input = dict()
+    for proc in process_data['processes']:
+        input[proc['name']] = {
+        "start_window": start_index,
+        "end_window": end_index,
+        "duration": int(proc['duration']/windowSize),
+        "dependencies": proc['dependencies']
+        }
+    return input
+
+def spt(carbon_api_data, process_data, windowSize):
+    new_proc_data = restructure_input_req(carbon_api_data, process_data, windowSize)
+    print(new_proc_data)
+    return None
+
+def run(request, windowSize=5):
     """
     This function is called for every invocation of the endpoint to perform the actual scoring/prediction.
     In the example we extract the data from the json input and call the scikit-learn model's predict()
@@ -117,14 +138,17 @@ def run(request):
     print("Request received")
     print(request)
     print('creating url for extracting data')
-    url, process_df= request_parser(request)
+    url, process_df= request_parser(request, str(windowSize))
     print('Getting data based on the request')
     data = webservice(url)
     print('calling NO Optimisation')
     nooptim_proc = nooptim(data, process_df, request)
 
-    print('calling Optimisation')
-    opti_model(data, request)
+    print('calling Shortest Processing Time')
+    spt(data, request, windowSize)
+
+    # print('calling Optimisation')
+    # opti_model(data, request)
 
     return data
 
@@ -186,7 +210,7 @@ class Overall_Process(ModelData):
         if obj_func=='minimize_total_c_credits':
             def objective_minimize_total_c_credits(model):
                 return model.process_c_credits 
-            self.m.obj = pe.Objective(rule=objective_minimize_total_c_credits, sense=pe.minimize)
+            self.m.obj = pe.Objective(rule=objective_minimize_total_c_credits, sense=pe.maximize)
 
     def export_the_results(self):
         df = pd.DataFrame()
@@ -194,7 +218,7 @@ class Overall_Process(ModelData):
         df['Process'] = [pe.value(self.m.process_active[h]) for h in self.m.hr_mins]
         df['Carbon Values'] =  [pe.value(self.m.carbon_value[h]) for h in self.m.hr_mins]
 
-        # df.to_excel('./results.xlsx', index=True)
+        df.to_excel('./results.xlsx', index=True)
 
     def print_output_func(self):
         print('Start index= {}'.format(round(pe.value(self.m.process_opti_start),3)))
@@ -219,9 +243,6 @@ def opti_model(carbon_api_data, process_data):
     # Setup the overall process model
     overall_process = Overall_Process(carbon_api_data, print_output=True)
     
-    # parse_json(file_path="./optimization/process_details.json")
-
-
     # Add each process unit as defined in the json
     for proc in process_data['processes']:
         print("Adding process: ", proc)
