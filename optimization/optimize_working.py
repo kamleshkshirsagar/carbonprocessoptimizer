@@ -124,7 +124,7 @@ def restructure_input_req(carbon_api_data, process_data, windowSize):
         }
     return input
 
-def spt(carbon_api_data, process_data, windowSize):
+def shortest_processing_time(carbon_api_data, process_data, windowSize):
     processes = restructure_input_req(carbon_api_data, process_data, windowSize)
     SCHEDULE = dict()
     unfinished_processes = set(processes.keys())
@@ -157,7 +157,7 @@ def run(request, windowSize=5):
     nooptim_proc = nooptim(data, process_df, request)
 
     print('calling Shortest Processing Time')
-    spt(data, request, windowSize)
+    shortest_processing_time(data, request, windowSize)
 
     # print('calling Optimisation')
     # opti_model(data, request)
