@@ -10,7 +10,6 @@ import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import MenuIcon from "@mui/icons-material/Menu";
 import List from "@mui/material/List";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { mainListItems } from "./listItems";
 import { Grid } from "@mui/material";
 import { ProcessTable } from "./processTable.component";

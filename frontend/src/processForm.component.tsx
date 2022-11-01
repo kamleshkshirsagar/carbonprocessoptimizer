@@ -19,7 +19,7 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
   const [startTime, setStartTime] = useState(null);
   const [endTime, setEndTime] = useState(null);
   const [dependencies, setDependencies] = useState(null);
-  const [duration, setDuration] = useState<number | null>(null);
+  const [duration, setDuration] = useState<number>(0);
   const getDependencyOptions = () => {
     return processes.map((process: Process, index) => {
       return { name: process.name, value: index };
@@ -131,7 +131,7 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
             type="number"
             label="Duration"
             placeholder="Enter in minutes"
-            value={duration}
+            value={duration.toString()}
             onChange={(e) => setDuration(Number(e.target.value))}
             style={{ marginLeft: "1rem", width: "10rem" }}
           />

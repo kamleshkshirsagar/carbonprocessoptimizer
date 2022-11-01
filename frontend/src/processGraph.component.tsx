@@ -1,6 +1,5 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-import { flatten } from "lodash";
 import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
 
 const data = [
@@ -13,7 +12,7 @@ export const ProcessGraph = ({
 }: {
   fetchedData: FAKE_DATA_TYPE | null;
 }) => {
-  const carbonRatings = FAKE_DATA.fakeData.map((data) => data.carbonRating);
+  const carbonRatings = FAKE_DATA.fakeData.map((data) => data.carbonRating); // should change with fetchedData
   const data = [
     [
       "Carbon Rate",

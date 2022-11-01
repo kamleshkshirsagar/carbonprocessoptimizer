@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Process } from "./processTable.component";
-const api_key = "IFB8pcdoRBhZGpb8t8IP8UKCAzcUND50";
-
+const api_key = "example";
 export interface OPTIMIZE_DTO {
   location: string;
   startTime: Date | null;
