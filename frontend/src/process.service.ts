@@ -1,7 +1,8 @@
 import axios from "axios";
 import { Process } from "./processTable.component";
 const api_key = "example";
-export interface OPTIMIZE_DTO {
+
+export interface REQUEST_OPTIMIZE_DTO {
   location: string;
   startTime: Date | null;
   endTime: Date | null;
@@ -13,7 +14,7 @@ export const fetchOptimizedProcesses = async ({
   startTime,
   endTime,
   processes,
-}: OPTIMIZE_DTO) => {
+}: REQUEST_OPTIMIZE_DTO) => {
   console.log(processes);
 
   const { data } = await axios.get(

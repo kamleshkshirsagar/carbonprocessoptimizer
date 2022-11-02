@@ -60,21 +60,25 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
             display: "flex",
             backgroundColor: "white",
             marginBottom: "1rem",
-            justifyContent: "center",
+            justifyContent: "space-around",
           }}
         >
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <TimePicker
               label="Optimization start window"
               views={["hours"]}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => (
+                <TextField {...params} style={{ width: "40%" }} />
+              )}
               value={formik.values.startTime}
               onChange={(newValue) => setStartTime(newValue)}
             ></TimePicker>
             <TimePicker
               label="Optimization end window"
               views={["hours"]}
-              renderInput={(params) => <TextField {...params} />}
+              renderInput={(params) => (
+                <TextField {...params} style={{ width: "40%" }} />
+              )}
               value={formik.values.endTime}
               onChange={(newValue) => setEndTime(newValue)}
             ></TimePicker>{" "}

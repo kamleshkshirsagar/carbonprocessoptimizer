@@ -1,8 +1,9 @@
 import React from "react";
+import { flatten } from "lodash";
 import { Process } from "./processTable.component";
 import { Chart } from "react-google-charts";
 import dayjs from "dayjs";
-import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
+import { FAKE_DATA, OPTIMIZE_DTO } from "./fakeData";
 
 interface ProcessListProps {
   processes: Process[];
@@ -10,7 +11,7 @@ interface ProcessListProps {
   endTime: any;
   isFetchedData?: boolean;
   selectedOption: string;
-  fetchedData: FAKE_DATA_TYPE | null;
+  fetchedData: OPTIMIZE_DTO[] | null;
 }
 const columns = [
   { type: "string", label: "Process Index" },
@@ -52,32 +53,35 @@ export const ProcessList = ({
           index.toString(),
           process.name,
           process.name,
-          dayjs(startTime).toDate(),
+          startTime.toDate(),
           null,
           process.duration !== null && process.duration * 60 * 1000,
           100,
           null,
         ];
       })
-    : FAKE_DATA.fakeData // should change with fetchedData
-        .filter((data) => data.type === selectedOption)
-        .map((data) =>
-          data.processes.map((process, index) => {
-            console.log("here2");
-            return [
-              index.toString(),
-              process.name,
-              process.name,
-              dayjs(process.startTime).toDate(),
-              dayjs(process.endTime).toDate(),
-              process.duration * 60 * 1000,
-              100,
-              process.dependencies !== null && process.dependencies.toString(),
-            ];
-          })
-        );
+    : flatten(
+        FAKE_DATA.filter((data) => data.type === selectedOption) // should change with fetchedData
+          .map((data) =>
+            data.processes.map((process, index) => {
+              return [
+                index.toString(),
+                process.name,
+                process.name,
+                process.startTime,
+                process.endTime,
+                process.duration * 60 * 1000,
+                100,
+                process.dependencies !== null
+                  ? process.dependencies.toString()
+                  : null,
+              ];
+            })
+          )
+      );
 
   const data = [columns, ...rows];
+  console.log("rows", rows);
 
   return (
     <>

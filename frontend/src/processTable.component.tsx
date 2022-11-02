@@ -7,7 +7,7 @@ import { ProcessGraph } from "./processGraph.component";
 import { ProcessList } from "./processList.component";
 import { fetchOptimizedProcesses } from "./process.service";
 import { OptimizationButtons } from "./optimizationButtons";
-import { FAKE_DATA_TYPE } from "./fakeData";
+import { OPTIMIZE_DTO } from "./fakeData";
 export interface Process {
   name: string;
   duration: number | null;
@@ -27,7 +27,7 @@ const theme = createTheme({
 
 export const ProcessTable = () => {
   const location = "eastus";
-  const [fetchedData, setFetchedData] = useState<FAKE_DATA_TYPE | null>(null);
+  const [fetchedData, setFetchedData] = useState<OPTIMIZE_DTO[] | null>(null);
   const [isFetchedData, setIsFetchedData] = useState(false);
   const [processes, setProcesses] = useState<Process[]>([]);
   const [startTime, setStartTime] = useState(null);
@@ -46,6 +46,7 @@ export const ProcessTable = () => {
   };
 
   const handleOptimize = async () => {
+    setIsFetchedData(true);
     const fetchedOptimizationData = await fetchOptimizedProcesses({
       location,
       startTime,
@@ -53,7 +54,6 @@ export const ProcessTable = () => {
       processes,
     });
     setFetchedData(fetchedOptimizationData);
-    setIsFetchedData(true);
   };
 
   return (
@@ -87,7 +87,7 @@ export const ProcessTable = () => {
             marginTop: "3rem",
           }}
         >
-          <ProcessGraph fetchedData={fetchedData} />
+          {isFetchedData && <ProcessGraph fetchedData={fetchedData} />}
           <div
             style={{
               display: "flex",

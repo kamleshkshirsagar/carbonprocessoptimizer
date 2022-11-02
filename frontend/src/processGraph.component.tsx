@@ -1,6 +1,6 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-import { FAKE_DATA, FAKE_DATA_TYPE } from "./fakeData";
+import { FAKE_DATA, OPTIMIZE_DTO } from "./fakeData";
 
 const data = [
   ["Carbon Rate", "W/o optimizer", "Optimizer", "Minimum Value", "Rule based"],
@@ -10,9 +10,9 @@ const data = [
 export const ProcessGraph = ({
   fetchedData,
 }: {
-  fetchedData: FAKE_DATA_TYPE | null;
+  fetchedData: OPTIMIZE_DTO[] | null;
 }) => {
-  const carbonRatings = FAKE_DATA.fakeData.map((data) => data.carbonRating); // should change with fetchedData
+  const carbonRatings = FAKE_DATA.map((data) => data.carbonRating); // should change with fetchedData
   const data = [
     [
       "Carbon Rate",
