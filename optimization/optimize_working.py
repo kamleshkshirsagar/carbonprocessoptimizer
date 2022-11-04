@@ -11,14 +11,17 @@ from pyomo.gdp import Disjunct, Disjunction
 from matplotlib import pyplot as plt
 
 
-# Look for it here: https://jckantor.github.io/ND-Pyomo-Cookbook/notebooks/04.04-Maintenance-Planning.html
 def opti_disjunctive_method(processes, carbon_api_data):
-
+    """
+    Only one process or all processes one after the other as a whole!!!
+    """
+    process_name = 'p1'
+    process = processes[process_name]
     # create model
     m = pe.ConcreteModel()
 
     # problem parameters
-    duration = 30         # Working duration of process
+    duration = process['duration']   # Working duration of process
     # number of process starts should be run (min. would be 1)
     num_proc_starts = 1
 
@@ -26,14 +29,12 @@ def opti_disjunctive_method(processes, carbon_api_data):
     c_df = pd.read_json(carbon_api_data)
     c_df.index += 1
     hr_mins = c_df.index.to_list()
-    print(hr_mins)
+    # print(hr_mins)
     m.T = pe.Set(initialize=hr_mins)
     T = len(hr_mins)
-    print([m.T[i] for i in m.T])
+    # print([m.T[i] for i in m.T])
 
     m.carbon_value = c_df['value'].to_dict()
-
-    c_df.to_excel('results.xlsx')
 
     # Process is not running except during the working duration
     m.Y = pe.RangeSet(1, T - duration+1)
@@ -69,8 +70,33 @@ def opti_disjunctive_method(processes, carbon_api_data):
     pe.SolverFactory('cbc').solve(m).write()
 
     # plot_schedule(m)
+    proc_start = [m.y[t]() for t in m.Y]
+    start = proc_start.index(1.0)
+    finish = start + process['duration']
+    schedule = dict()
+    schedule[process_name] = {'name': process_name, 'dependencies': process['dependencies'],
+                        'duration': process['duration'], 'start': start, 'finish': finish}
+    return schedule
 
-    return m
+
+
+def plot_schedule(m):
+    fig, ax = plt.subplots(3,1, figsize=(9,4))
+    
+    min_c_val = min([m.carbon_value[t] for t in m.T])
+    ax[0].bar(m.T, [m.carbon_value[t]-min_c_val for t in m.T])
+    ax[0].set_title('daily profit $c_t$')
+    
+    ax[1].bar(m.T, [m.x[t]() for t in m.T], label='normal operation')
+    ax[1].set_title('process operating schedule $x_t$')
+    
+    ax[2].bar(m.Y, [m.y[t]() for t in m.Y])
+    ax[2].set_title('1 starts $y_t$')
+    for a in ax:
+        a.set_xlim(0.1, len(m.T)+0.9)
+        
+    plt.tight_layout()
+    plt.show()
 
 
 def init():
@@ -92,6 +118,9 @@ def request_parser(request, windowSize):
 
 
 def nooptim(processes, carbon_api_data):
+    """
+    No optimization but starting with start windown and considering dependencies.
+    """
     c_df = pd.read_json(carbon_api_data)
     # print(c_df, processes)
     schedule = dict()
@@ -175,11 +204,11 @@ def shortest_processing_time(processes):
         process = min(spt, key=spt.get)
         finish = start + processes[process]['duration']
         unfinished_processes.remove(process)
-        schedule[process] = {'start': start, 'finish': finish}
+        schedule[process] = {'name': process, "dependencies": processes[process]['dependencies'],
+                             "duration": processes[process]['duration'], 'start': start, 'finish': finish}
         start = finish
 
-    print(schedule)
-    return None
+    return schedule
 
 
 def run(request, windowSize=5):
@@ -205,13 +234,10 @@ def run(request, windowSize=5):
         shortest_processing_time(processes)
 
         print('calling Optimisation')
-        # schedule = opt_schedule(processes, carbon_api_data)=
-        # schedule = opti_model(processes, carbon_api_data)
-        # schedule = opti_disjunctive_method(processes, carbon_api_data)
+        schedule = opti_disjunctive_method(processes, carbon_api_data)
         # print(schedule)
 
     return carbon_api_data
-
 
 def main():
     init()
