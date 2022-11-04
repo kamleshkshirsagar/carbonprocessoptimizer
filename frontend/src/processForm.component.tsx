@@ -91,7 +91,7 @@ export const ProcessForm = ({ addProcess, processes }: ProcessFormProps) => {
             textAlign: "center",
           }}
         >
-          Add maximum 4 processes
+          Add processes
         </Typography>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <TextField

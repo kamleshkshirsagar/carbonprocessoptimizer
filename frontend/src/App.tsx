@@ -110,7 +110,7 @@ function App() {
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              Carbon Optimised Job Scheduler
+              Carbon Optimized Process Scheduler
             </Typography>
           </Toolbar>
         </AppBar>

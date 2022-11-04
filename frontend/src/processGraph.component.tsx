@@ -21,16 +21,13 @@ export const ProcessGraph = ({
       "Minimum Value",
       "Rule based",
     ],
-    ["Carbon Rate", ...carbonRatings],
+    ["Estimated Co2 Emissions (ton)", ...carbonRatings],
   ];
   const options = {
-    title: "Carbon Rating for running the processes",
+    title: "Total Co2 Emissions from the processes",
     // hAxis: {
     //   title: "Category 1",
     // },
-    vAxis: {
-      title: "Rating (scale of 1-10)",
-    },
     bar: { groupWidth: "20%" },
     legend: "none",
   };
